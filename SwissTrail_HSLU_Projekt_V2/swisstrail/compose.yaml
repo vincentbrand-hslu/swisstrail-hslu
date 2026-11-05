@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      SWISSTRAIL_DB: /data/swisstrail.db
+    volumes:
+      - swissdata:/data
+    restart: unless-stopped
+volumes:
+  swissdata:

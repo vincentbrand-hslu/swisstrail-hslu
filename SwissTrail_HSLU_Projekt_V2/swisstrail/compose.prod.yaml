@@ -1,0 +1,29 @@
+# Public VM deployment requires DNS pointed to the VM and ports 80/443 open.
+# HTTPS is handled by Caddy. Set DOMAIN to your OWN actual hostname.
+services:
+  web:
+    build: .
+    environment:
+      SWISSTRAIL_DB: /data/swisstrail.db
+      SWISSTRAIL_SECURE_COOKIE: '1'
+    volumes:
+      - swissdata:/data
+    restart: unless-stopped
+  proxy:
+    image: caddy:2-alpine
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env to your actual hostname}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    depends_on:
+      - web
+    restart: unless-stopped
+volumes:
+  swissdata:
+  caddydata:
+  caddyconfig:
