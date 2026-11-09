@@ -16,6 +16,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 from trail_data import nearby_segment, DEFAULT_TRAILS_DB
+from trail_bootstrap import start_import_background
 
 BASE = Path(__file__).resolve().parent
 DB = Path(os.getenv("SWISSTRAIL_DB", str(BASE / "swisstrail.db")))
@@ -92,6 +93,11 @@ def init_db():
 
 
 init_db()
+
+
+@app.on_event("startup")
+def maybe_import_trails():
+    start_import_background()
 
 
 def password_hash(password: str, salt: bytes) -> str:
