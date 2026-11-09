@@ -18,6 +18,28 @@ GitHub Actions: `.github/workflows/tests.yml`, `.github/workflows/production-smo
 - Railway-Deployment des HSLU-Prototyps erfolgreich; Volume `/data` vorhanden.
 - Nutzer bestätigte am 09.11.2026, dass der Wanderwegklick im Browser funktioniert. Das ersetzt nicht das vollständige manuelle Systemtestprotokoll.
 
+## Automatisierte Chromium-Systemtests (09.11.2026)
+Die Datei `tests/browser_e2e.py` startet die echte SwissTrail-Webanwendung mit einer temporären SQLite-Testdatenbank und bedient sie anschliessend über einen **headless Chromium-Browser mit Playwright**. Der Testlauf für GitHub-Commit `26da4cc90b47b65159666c0bf261eb96473240d1` wurde erfolgreich abgeschlossen:
+
+| Browser-Systemtest | Überprüfter Nutzerablauf | Ergebnis |
+|---|---|---|
+| `test_public_expedition_homepage_browser` | Expedition-Startseite, Credits Vincent/Marlon/Enzkar/Kevin, Regionen, Überrasch-mich, Sprung zur Karte | Bestanden |
+| `test_official_trails_and_geoadmin_search_browser` | Echte Leaflet-Klickbehandlung; RTree-Testsegment wird im Popup mit Länge/Kategorie angezeigt; GeoAdmin-Suchergebnis wird ausgewählt | Bestanden |
+| `test_registration_saved_places_routes_and_login` | Registrierung, Anmeldung, Ort mit Notiz speichern, eigene Route zeichnen und speichern, Seiten-Reload, Abmeldung und Neuanmeldung mit erhaltenen Daten | Bestanden |
+| `test_mobile_layout_browser` | Mobile Ansicht (390 × 844), zentrale Buttons und Regionskarten, keine horizontale Überbreite | Bestanden |
+
+**Wichtige Testgrenzen:** Der Browser läuft in GitHub Actions, nicht auf einem physischen Smartphone. GeoAdmin-Suchantwort und WMTS-Kacheln werden in diesen isolierten Tests simuliert; die öffentliche GeoAdmin-Integration wurde zusätzlich in anderen Live-Tests geprüft. Die Wegklickfunktion nutzt eine eigens für den Test angelegte RTree-Datenbank mit einem realen FastAPI-Endpunkt. Die Tests legen **keine** Konten auf Railway an.
+
+Ausführen:
+```bash
+python -m pip install -r requirements.txt
+python -m pip install playwright
+python -m playwright install chromium
+python -m pytest -q tests/browser_e2e.py -v
+```
+
+Die GitHub-Actions-Workflowdatei `.github/workflows/tests.yml` führt die Chromium-Systemtests bei Pull Requests automatisch durch. Browser-Screenshots sind als Actions-Artefakt abrufbar.
+
 ## Manuelle Browser-Testfälle (nicht erfunden, vom Team auszufüllen)
 | ID | Test | Erwartet | Datum/Browser/Testperson | Ist-Ergebnis | Status |
 |---|---|---|---|---|---|

@@ -2,7 +2,7 @@
 
 | Zeit | Inhalt | Nachweis |
 |---|---|---|
-| 0:00–1:30 | Team, reale Rollen und Projektplanung | Namen/Zuständigkeiten ergänzen |
+| 0:00–1:30 | Team, reale Rollen und Projektplanung | Projektteam Vincent, Marlon, Enzkar und Kevin; Zuständigkeiten ergänzen |
 | 1:30–3:00 | Kundenproblem: Smart Travel | Wanderwege entdecken, Streckenideen organisieren |
 | 3:00–4:30 | Anforderungen | F01–F08, Qualität und Deployment |
 | 4:30–7:00 | Architektur / C4 | Browser → REST-Backend → GeoAdmin + SQLite |

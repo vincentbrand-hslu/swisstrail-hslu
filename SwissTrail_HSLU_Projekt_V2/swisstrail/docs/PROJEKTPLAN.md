@@ -33,6 +33,8 @@ Die Projektphasen der Aufgabenstellung wurden als Arbeitsabschnitte übernommen:
 | Tests / Security | OFFEN | |
 | Dokumentation / Demo | OFFEN | |
 
+**Projektteam:** Vincent, Marlon, Enzkar und Kevin. Die verantwortlichen Personen in der Tabelle entsprechend den tatsächlich ausgeführten Arbeiten zuordnen.
+
 **Wichtig:** Die tatsächlichen Teambeiträge ehrlich protokollieren. Git-Commit-History kann Arbeitsfortschritte belegen, ist aber nicht automatisch gleichzusetzen mit der Leistung jeder Person.
 
 ## Decisions (kurzes ADR)

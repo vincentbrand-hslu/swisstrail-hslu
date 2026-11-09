@@ -58,3 +58,104 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:800px){.destination-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.destination-bottom small{display:none}.destination{min-height:128px}.destination-top span{display:none}.map-help{right:12px;left:12px;bottom:12px}}
 @media(max-width:560px){.destination-grid{grid-template-columns:1fr 1fr}.destination:last-child{grid-column:1/-1}.discovery-count{display:none}.destination{min-height:135px}.destination-bottom small{display:block}.discovery-heading h2{font-size:24px}.map-help{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+
+/* =============================================================
+   SwissTrail 5 — Expedition visual system
+   Alpine editorial design, immersive photography, safe motion.
+   Photos are illustrative Unsplash photography, not exact
+   verified photos of each destination.
+   ============================================================= */
+:root{--sand:#f5f5ee;--forest-deep:#092820;--lime:#ceff80;--serif:Georgia,'Times New Roman',serif}
+body{background:var(--sand)}
+.sidebar{background:#102920;color:#edf8ee;border-right:1px solid #325145;box-shadow:10px 0 30px #0b302114}
+.brand strong{color:#f6fff4}.brand strong span{color:#d1f48d}.brand small{color:#9abaae}
+.brandicon{background:#def795;color:#143b2b}
+.sidebar .eyebrow{color:#789b89}.sidebar .nav{color:#b8d1c3}
+.sidebar .nav:hover{background:#234838;color:#e9ffe4}
+.sidebar .nav.active{background:#d7f78b;color:#173b2d;box-shadow:0 6px 22px #020e073a}
+.sidebar .nav b{background:#315544;color:#e6f4e9}.sidebar .nav.active b{background:#b1d866;color:#173b2d}
+.sidebar .quick{color:#d2e5d9}.sidebar .quick:hover{background:#254839;color:#fff}
+.sidebar .quick small{color:#93b19d}
+.sidebar .mini-panel{background:#264636;color:#e5f3e4;border:1px solid #42654f}
+.sidebar .mini-panel small{color:#a4c6b2}.sidebar .tiny{color:#8fac9f}
+.topbar{background:#fffefb;border-color:#e5e9dc}
+.content.expedition-content{max-width:1500px;padding-top:20px}
+.expedition-hero{position:relative;overflow:hidden;min-height:540px;display:flex;align-items:center;background:#14382f;border-radius:24px;color:#fff;isolation:isolate;box-shadow:0 28px 60px #173d3150}
+.hero-sky{position:absolute;inset:0;z-index:-2;background-image:linear-gradient(90deg,#0c2929d9 0%,#123d39b5 38%,#0b232a50 68%,#0a24216e 100%),url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=85');background-size:cover;background-position:center 50%;transform:scale(1.01);animation:heroBreath 18s ease-in-out infinite alternate}
+.hero-vignette{position:absolute;inset:0;background:linear-gradient(0deg,#071f2490 0%,transparent 46%,#071f2b35 100%)}
+@keyframes heroBreath{from{transform:scale(1.01)}to{transform:scale(1.095)}}
+.hero-content{padding:72px clamp(28px,6.5vw,90px) 82px;max-width:800px;position:relative;z-index:1}
+.hero-kicker{font-size:10px;font-weight:800;letter-spacing:2.3px;display:flex;align-items:center;gap:13px;color:#e4ffd0;margin-bottom:21px}
+.hero-kicker-line{width:28px;height:2px;background:var(--lime);display:inline-block}
+.hero-kicker-circle{color:var(--lime);font-size:17px}
+.expedition-hero h1{font-family:Manrope,sans-serif;font-size:clamp(48px,6.7vw,95px);line-height:1.015;letter-spacing:-5px;font-weight:800;margin:0;text-shadow:0 2px 20px #0c302344}
+.expedition-hero h1 em{font-family:var(--serif);font-weight:400;letter-spacing:-4px;font-style:italic;color:#ddff9e}
+.expedition-hero p{max-width:490px;font-size:15px;line-height:1.8;font-weight:500;color:#e3f1e9;margin:24px 0 30px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.hero-actions button{border-radius:10px;padding:16px 20px;font-weight:800;font-size:13px;transition:background .2s,transform .2s,box-shadow .2s}
+.hero-primary{border:1px solid #d2fa8d;background:#d5fc93;color:#163d2d;box-shadow:0 10px 25px #06241850}
+.hero-primary:hover{background:#e7ffbf;transform:translateY(-3px);box-shadow:0 14px 28px #06241860}
+.hero-primary span{margin-left:22px;font-size:17px}
+.hero-secondary{background:#ffffff1d;border:1px solid #f1fff486;color:#fff;backdrop-filter:blur(10px)}
+.hero-secondary:hover{background:#ffffff32;transform:translateY(-3px)}
+.hero-micro{font-size:9px;letter-spacing:1.35px;color:#d0e6d1;display:flex;align-items:center;gap:10px;margin-top:28px;font-weight:700}
+.hero-micro-dot{width:7px;height:7px;background:#ccf689;border-radius:50%;box-shadow:0 0 0 5px #d5fbaa25}
+.hero-micro-sep{color:#9cbba2}
+.hero-bottom{position:absolute;bottom:20px;left:25px;right:25px;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:10px;color:#dcead8b0;font-size:9px;letter-spacing:1.4px;font-weight:800}
+.hero-scroll{display:flex;align-items:center;gap:11px}
+.hero-scroll span{font-size:16px;animation:scrollArrow 2s ease-in-out infinite}
+@keyframes scrollArrow{50%{transform:translateY(5px)}}
+.expedition-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 1.3fr;background:#fff;padding:24px 24px;border:1px solid #e2eadb;border-radius:15px;box-shadow:0 13px 32px #163b2412;gap:15px;margin:19px 0 57px}
+.expedition-stats>div:not(.stats-cta){display:flex;align-items:center;gap:13px;border-right:1px solid #e5eee3}
+.expedition-stats .stat-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:#eef6e6;color:#467b55;font-size:24px}
+.expedition-stats strong{font:800 clamp(18px,2vw,25px) Manrope,sans-serif;color:#193c2d;letter-spacing:-1px;display:block}
+.expedition-stats small{font-size:10px;color:#8ca094;display:block;line-height:1.5}
+.stats-cta{display:flex;flex-direction:column;justify-content:center;padding-left:12px}
+.stats-cta>span{font-size:9px;color:#739883;font-weight:800;letter-spacing:1.6px}
+.stats-cta strong{font-size:15px;letter-spacing:-.4px;margin:3px 0}
+.discovery{margin:0 0 48px}
+.discovery-heading{margin-bottom:23px}
+.discovery-heading h2,.section-heading-map h2,.team-section h2{font:800 clamp(30px,3.4vw,45px) Manrope,sans-serif;letter-spacing:-2px;line-height:1.13;margin:0;color:#193b2c}
+.discovery-heading h2 span,.section-heading-map h2 em,.team-section h2 em{font-family:var(--serif);font-weight:400;font-style:italic;color:#4e9471;letter-spacing:-1px}
+.discovery-heading p,.section-heading-map p{max-width:560px;font-size:13px;line-height:1.7;color:#7d9185}
+.discovery-count{padding-bottom:8px}.discovery-count strong{font-size:11px;letter-spacing:1.2px;color:#3d8c64}.discovery-count span{letter-spacing:1px;font-weight:700}
+.destination-grid{gap:16px}
+.destination{min-height:275px;border-radius:17px;border:1px solid #e7ede3;box-shadow:0 16px 40px #0a25272a;background-color:#2e5348;background-position:center;background-size:cover}
+.destination::before{background:linear-gradient(180deg,#071b238a 0%,#112d3040 34%,#051c1cf0 100%)}
+.destination::after{display:none}
+.destination-rigi{background-image:url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=900&q=80')}
+.destination-pilatus{background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=900&q=80')}
+.destination-chur{background-image:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=80')}
+.destination-top{font-size:11px;letter-spacing:2px}.destination-top span{font-size:10px}
+.destination-bottom strong{font:800 clamp(28px,3vw,40px) Manrope,sans-serif;letter-spacing:-1.6px}
+.destination-bottom small{font-size:12px;color:#dce8df;line-height:1.5}
+.destination-bottom b{font-size:12px;margin-top:12px;color:#ddff9e}
+.destination:hover{transform:translateY(-6px);box-shadow:0 25px 50px #0d352e51}
+.section-heading-map{margin:12px 0 23px}
+.section-heading-map p{margin:12px 0 0}
+.mapcard{border-radius:19px;box-shadow:0 15px 43px #132f2b18}
+.map-head{background:#fdfefa}.map-frame{background:#eff2e8}
+.map-help{border-radius:10px}
+.experience-banner{position:relative;overflow:hidden;border-radius:22px;background:linear-gradient(110deg,#092b28f5 5%,#185d56b0 63%,#11443b80),url('https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1650&q=80') center/cover;min-height:292px;margin:44px 0;display:flex;align-items:center;padding:45px clamp(27px,6vw,78px);color:white;box-shadow:0 18px 36px #12362a25}
+.experience-banner>div:not(.experience-shimmer){position:relative;z-index:1;max-width:560px}
+.experience-banner .eyebrow{color:#d5f59d;margin:0 0 15px}
+.experience-banner h2{font:800 clamp(31px,4vw,53px) Manrope,sans-serif;letter-spacing:-2.2px;line-height:1.12;margin:0}
+.experience-banner h2 em{font:italic 400 1em var(--serif);color:#ddff9b}
+.experience-banner p{font-size:13px;color:#d8e9df;line-height:1.8;max-width:460px;margin:16px 0}
+.experience-banner button{border:1px solid #c9ef91;border-radius:9px;background:#d8ff9c;color:#153628;padding:13px 18px;font-weight:800}
+.experience-banner button:hover{background:#ecffce}
+.experience-number{position:absolute;right:25px;bottom:24px;color:#e8fae0b7;font-size:9px;font-weight:800;letter-spacing:2px}
+.experience-shimmer{position:absolute;width:48%;height:250%;background:#ffffff08;transform:rotate(30deg);right:-20%;pointer-events:none}
+.team-section{display:flex;align-items:flex-end;justify-content:space-between;gap:35px;border-top:1px solid #e3e9dd;padding:47px 3px 20px;margin:44px 0 0}
+.team-section h2{font-size:clamp(28px,3vw,38px)}
+.team-section p{font-size:12px;color:#809388;max-width:330px;line-height:1.65}
+.team-people{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 19px;min-width:300px}
+.team-people span{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:800;color:#375746}
+.team-people b{height:36px;width:36px;border-radius:50%;display:grid;place-items:center;background:#dfedcc;color:#376547;font-weight:800}
+footer{margin-top:0}
+@media(max-width:1300px){.expedition-stats{grid-template-columns:repeat(3,1fr)}.stats-cta{display:none}.destination{min-height:245px}}
+@media(max-width:950px){.expedition-hero{min-height:460px}.hero-content{padding:65px 38px 78px}.expedition-hero h1{font-size:clamp(47px,7.5vw,72px)}.expedition-stats{margin-bottom:45px}.team-section{align-items:flex-start;flex-direction:column}.team-people{grid-template-columns:repeat(4,auto);min-width:0}}
+@media(max-width:710px){.content.expedition-content{padding:17px 14px 40px}.expedition-hero{border-radius:17px;min-height:465px}.hero-content{padding:54px 26px 75px}.hero-kicker{font-size:9px;letter-spacing:1.1px;gap:7px}.expedition-hero h1{font-size:clamp(41px,9vw,66px);letter-spacing:-3px}.expedition-hero h1 em{letter-spacing:-2px}.expedition-hero p{font-size:13px}.hero-actions button{padding:14px 15px;font-size:12px}.hero-bottom{left:20px;right:20px;font-size:8px}.hero-bottom>span:first-child{display:none}.expedition-stats{padding:14px;gap:8px}.expedition-stats>div:not(.stats-cta){gap:6px}.expedition-stats .stat-icon{width:29px;height:29px;font-size:17px}.expedition-stats strong{font-size:18px;letter-spacing:-.7px}.expedition-stats small{font-size:9px}.destination-grid{grid-template-columns:1fr 1fr}.destination{min-height:220px}.destination:last-child{grid-column:1/-1;min-height:205px}.destination-top span{display:none}.destination-bottom strong{font-size:29px}.destination-bottom small{display:block;font-size:10px}.experience-banner{padding:30px 25px;min-height:260px}.team-people{grid-template-columns:repeat(2,auto)}}
+@media(max-width:430px){.hero-actions{flex-direction:column;align-items:stretch}.hero-actions button{width:100%;text-align:left}.expedition-hero{min-height:500px}.expedition-stats .stat-icon{display:none}.expedition-stats strong{font-size:16px}.expedition-stats small{font-size:8px}.destination-grid{grid-template-columns:1fr}.destination:last-child{grid-column:auto}.destination{min-height:235px}}
+@media(prefers-reduced-motion:reduce){.hero-sky,.hero-scroll span{animation:none!important}}
