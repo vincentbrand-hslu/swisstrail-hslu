@@ -44,3 +44,11 @@ Separate amtliche Datenbank `trails.db`: `trail_segments(id,category,length_km,c
 3. WMTS plus GeoPackage: anschaulicher Kartenlayer und getrennte Vektorsuche.
 
 Die amtliche Kategorie ist nicht SAC T1–T6. Segmentlänge ist nicht Gesamtroutenlänge. Eigene Route ist Haversine-2D-Verbindung der Klickpunkte, keine automatische Wegführung, keine Höhenmeter und keine aktuelle Sperr-/Wetterlage.
+## Ergänzung SwissTrail 6
+| ID | Funktion | Akzeptanzkriterium |
+|---|---|---|
+| F09 | Routen-GPX-Export | Angemeldete Person kann eigene gezeichnete Tour als valide GPX-1.1-Trackpunkte herunterladen; HTML/XML-Sonderzeichen im Namen werden maskiert |
+| F10 | Routen suchen und sortieren | Filter nach Name, Notiz oder Kategorie; Sortierung nach Name, Länge und Neueste; ohne Veränderung der gespeicherten Daten |
+| F11 | Wanderwegkategorien verstehen | Übersicht über die drei offiziellen Wegkategorien inklusive begrenzter Aussagekraft und Sicherheitshinweis |
+
+Die GPX-Datei stellt eine selbst gezeichnete Linie dar und darf nicht als routenoptimierte Navigationsanweisung interpretiert werden.
