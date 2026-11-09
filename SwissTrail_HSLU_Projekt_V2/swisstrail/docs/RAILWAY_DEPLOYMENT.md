@@ -29,3 +29,17 @@ https://data.geo.admin.ch/ch.swisstopo.swisstlm3d-wanderwege/swisstlm3d-wanderwe
 Ein Release ohne importierte `trails.db` würde lediglich den Klick-Schalter
 aktivieren, aber beim Klicken eine Fehlermeldung zeigen. Daher vor Merge
 den Datensatz importieren und die Abfrage prüfen.
+
+## Automatischer einmaliger Import auf Railway
+
+Setze vor dem Merge des vorbereiteten Branches die Variablen
+`SWISSTRAIL_AUTO_IMPORT=1` und `SWISSTRAIL_TRAILS_DB=/data/trails.db`.
+Nach dem Deployment beginnt das Backend, falls keine `trails.db` existiert,
+einen Hintergrundimport aus dem offiziellen swisstopo-ZIP. Wegen der
+Datensatzgrösse kann dies dauern; die bestehende Anwendung bleibt währenddessen
+online. Beobachte die Railway Deploy Logs; der Import ist erst erfolgreich, wenn
+`/api/health` `official_trails_loaded: true` zurückgibt und
+`/api/trails/nearby` eine echte Geometrie liefert.
+Die 500-MB-Volume-Grenze sowie temporärer RAM/Disk können den Import begrenzen.
+Bei Fehlern `SWISSTRAIL_AUTO_IMPORT=0` setzen und Importdaten prüfen.
+Die Datei wird nach erfolgreichem Import dauerhaft auf dem Railway-Volume gespeichert.
