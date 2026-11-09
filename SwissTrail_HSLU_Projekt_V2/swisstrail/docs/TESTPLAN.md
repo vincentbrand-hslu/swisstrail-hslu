@@ -57,3 +57,5 @@ Die GitHub-Actions-Workflowdatei `.github/workflows/tests.yml` führt die Chromi
 | M12 | Keyboard / reduzierte Bewegung | Buttons erreichbar, ruhige Animationen | | | Offen |
 
 Die Spalten mit Beobachtung und Status sind erst nach tatsächlichem Test zu befüllen. Kein manueller Test wird pauschal als bestanden behauptet.
+## Ergänzter Chromium-Test: Touren-Werkzeuge
+`test_registration_saved_places_routes_and_login` kontrolliert nach dem Erstellen und erneuten Laden einer eigenen Route auch die Filterung (kein Treffer und Treffer), die Sortierung und den Browser-Download einer GPX-1.1-Datei mit zwei Trackpunkten, Wegnamen und selbst gewählter Kategorie. Diese Prüfungen laufen auf einer **isolierten SQLite-Testdatenbank**. Den aktuellen GitHub-Actions-Status erst nach Abschluss des jeweiligen Runs als bestanden markieren.

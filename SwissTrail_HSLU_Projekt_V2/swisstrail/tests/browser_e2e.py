@@ -171,6 +171,23 @@ def test_registration_saved_places_routes_and_login(browser,site):
         page.locator("#userArea").wait_for(state="visible",timeout=10000)
         page.locator("[data-tab=routes]").click()
         assert "Browsertest Route" in page.locator("#routeList").inner_text()
+        # Client-side filtering never changes server-stored route data.
+        page.locator("#routeFilter").fill("does-not-exist")
+        assert "Keine passende Tour" in page.locator("#routeList").inner_text()
+        page.locator("#routeFilter").fill("Browsertest")
+        assert "Browsertest Route" in page.locator("#routeList").inner_text()
+        page.locator("#routeSort").select_option("long")
+        assert "1 von 1" in page.locator("#routeSummary").inner_text()
+        # GPX is downloaded locally from the user's authenticated route coordinates.
+        with page.expect_download(timeout=15000) as download_info:
+            page.get_by_role("button", name="GPX exportieren").click()
+        download=download_info.value
+        assert download.suggested_filename == "Browsertest-Route.gpx"
+        contents=Path(download.path()).read_text(encoding="utf-8")
+        assert '<gpx version="1.1"' in contents
+        assert "Browsertest Route" in contents
+        assert contents.count("<trkpt ")==2
+        assert "Bergwanderweg" in contents
         page.locator("[data-tab=saved]").click()
         assert "HSLU Testort" in page.locator("#savedList").inner_text()
         page.locator("#logoutButton").click()

@@ -2,7 +2,7 @@ name: SwissTrail tests
 
 on:
   push:
-    branches: [main, feature/swisstrail-v3-safe-migration, feature/abgabe-ui-polish, feature/expedition-experience-e2e]
+    branches: [main, feature/swisstrail-v3-safe-migration, feature/abgabe-ui-polish, feature/expedition-experience-e2e, feature/route-toolkit-gpx]
   pull_request:
 
 jobs:

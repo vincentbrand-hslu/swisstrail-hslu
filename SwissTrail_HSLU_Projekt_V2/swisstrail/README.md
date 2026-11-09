@@ -52,3 +52,9 @@ SQLite auf einem Volume ist einfach und erfüllt den DB-Teil des Auftrags; ein V
 
 ## Team & Credits
 **Projektteam:** Vincent, Marlon, Enzkar und Kevin. Die genaue persönliche Aufgabenverteilung und individuelle Beiträge müssen vom Team mit echten Nachweisen ergänzt werden. Daten: swisstopo / geo.admin.ch, Leaflet; Technik: FastAPI, Pydantic, SQLite, shapely, pyproj, httpx, Railway. Bildungsprototyp im Rahmen des HSLU-Moduls «Angewandte Informatik».
+## Zusätzliche Touren-Werkzeuge (SwissTrail 6)
+- **GPX-Export:** Eigene, gespeicherte Routen als GPX 1.1 herunterladen. Exportiert werden die selbst gezeichneten Stützpunkte, keine automatische Wanderwegführung, keine Höhenmeter, keine Zeiten.
+- **Tourenarchiv:** Eigene Routen nach Name, Notiz oder Kategorie suchen und nach Name/Länge/Neueste sortieren. Die Suche erfolgt nur im Browser auf bereits mit der eigenen Session geladenen Touren.
+- **Weglegende:** Offizielle Kategorien Wanderweg (gelb), Bergwanderweg (weiss-rot-weiss), Alpinwanderweg (weiss-blau-weiss), mit Sicherheitshinweis. Die Kategorien sind keine SAC-T1–T6-Einstufung.
+
+Diese Erweiterungen erfordern keine Datenbankmigration. Ein echter Chromium-Test prüft Filtern, Sortieren, Download und die GPX-XML-Punkte. Die Funktionen sind ohne Anmeldung für die Weglegende und nach Anmeldung für persönliche Touren sichtbar.
