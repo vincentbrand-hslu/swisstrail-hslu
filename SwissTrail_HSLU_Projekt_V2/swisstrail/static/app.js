@@ -52,9 +52,10 @@ function initMap(){
 }
 
 async function inspectOfficialTrail(latlng){
+  toast('Suche offiziellen Wanderweg in der Nähe …');
   try {
     const result=await callApi(`/api/trails/nearby?lat=${encodeURIComponent(latlng.lat)}&lon=${encodeURIComponent(latlng.lng)}`);
-    if(!result.found){toast('Kein offizieller Wanderwegabschnitt innerhalb von 65 Metern gefunden.');return;}
+    if(!result.found){toast('Hier liegt kein amtlicher Wanderwegabschnitt im Umkreis von 65 m. Zoome näher heran und klicke auf einen Wanderweg.');return;}
     const s=result.segment;
     if(highlightedOfficialSegment)map.removeLayer(highlightedOfficialSegment);
     highlightedOfficialSegment=L.polyline(s.coordinates.map(c=>[c[1],c[0]]),{color:'#e04e29',weight:7,opacity:.95}).addTo(map);
@@ -66,7 +67,7 @@ async function inspectOfficialTrail(latlng){
     const caveat=document.createElement('small');caveat.textContent='Länge dieses Abschnitts, nicht die gesamte Wanderroute. Kategorie: swisstopo.';
     details.append(len,category);root.append(title,details,caveat);
     highlightedOfficialSegment.bindPopup(root).openPopup(latlng);
-  } catch(e) {toast(e.message);}
+  } catch(e) {toast('Wanderweg-Abfrage fehlgeschlagen: '+e.message);}
 }
 function openPlace(){if(!currentPoint)return; $('placeName').value=currentPoint.name||'Mein Wanderziel';$('placeNotes').value='';$('coordinates').textContent=`Koordinaten: ${currentPoint.lat.toFixed(5)}, ${currentPoint.lon.toFixed(5)}`;$('placeError').classList.add('hidden');modal('place',true);}
 function selectPlace(place){
@@ -219,3 +220,5 @@ $('routeForm').onsubmit=async e=>{
   }catch(err){$('routeError').textContent=err.message;$('routeError').classList.remove('hidden');}finally{btn.disabled=false;}
 };
 initMap();callApi('/api/me').then(setUser).catch(()=>setUser(null));
+
+$('officialTrailToggle').addEventListener('change',()=>toast($('officialTrailToggle').checked?'Klicke in die Karte nahe an einen Wanderweg (max. 65 m).':'Wegabfrage deaktiviert – Orte können wieder gemerkt werden.'));
