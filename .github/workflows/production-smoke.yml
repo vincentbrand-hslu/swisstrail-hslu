@@ -1,0 +1,50 @@
+name: SwissTrail production smoke test
+
+on:
+  push:
+    paths:
+      - '.github/workflows/production-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check HTTPS, app health and official trail API
+        run: |
+          python - <<'PY'
+          import json, time, urllib.request, urllib.error
+          host = "https://swisstrail-hslu-production.up.railway.app"
+          def get(path):
+              req = urllib.request.Request(host + path,headers={"User-Agent":"SwissTrail-HSLU-smoke-test"})
+              with urllib.request.urlopen(req,timeout=20) as r:
+                  return r.status, json.load(r)
+          for attempt in range(6):
+              try:
+                  status, health = get("/api/health")
+                  if status != 200 or health.get("status") != "ok":
+                      raise AssertionError("Health unhealthy")
+                  if not health.get("official_trails_loaded"):
+                      raise AssertionError("Official trails database is not imported yet")
+                  break
+              except Exception as e:
+                  if attempt == 5: raise
+                  print("Retry", attempt + 1, str(e))
+                  time.sleep(5)
+          print("Production health OK; official trails database loaded")
+          points = [(47.056,8.485),(46.977,8.255),(47.051,8.49),
+                    (46.796,9.638),(46.852,9.533),(47.009,8.524)]
+          found = []
+          for lat,lon in points:
+              status, result = get(f"/api/trails/nearby?lat={lat}&lon={lon}")
+              assert status == 200
+              if result.get("found"):
+                  segment = result["segment"]
+                  assert segment["category"] in ("Wanderweg","Bergwanderweg","Alpinwanderweg")
+                  assert segment["length_km"] >= 0
+                  assert len(segment["coordinates"]) >= 2
+                  found.append((lat,lon,segment["category"],segment["length_km"]))
+          print("Valid segment hits:",found)
+          if not found:
+              print("No hit at the fixed checkpoints: endpoint still responds, but click-position coverage must be checked manually.")
+          PY
