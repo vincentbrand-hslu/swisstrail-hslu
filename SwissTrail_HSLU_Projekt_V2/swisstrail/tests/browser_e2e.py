@@ -131,9 +131,9 @@ def test_official_trails_and_geoadmin_search_browser(browser,site):
         assert "0.08 km" in text
         page.locator("#searchInput").fill("Luzern")
         page.locator("#searchButton").click()
-        page.locator("#searchResults .result").first.wait_for(timeout=10000)
-        assert "Luzern" in page.locator("#searchResults .result").first.inner_text()
-        page.locator("#searchResults .result").first.click()
+        page.locator("#searchResults button.result").first.wait_for(timeout=10000)
+        assert "Luzern" in page.locator("#searchResults button.result").first.inner_text()
+        page.locator("#searchResults button.result").first.click()
         assert "Luzern" in page.locator(".leaflet-popup-content").last.inner_text()
     finally:ctx.close()
 
