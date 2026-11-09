@@ -13,6 +13,9 @@ from shapely.ops import transform
 from pyproj import Transformer
 
 VALID = {"Wanderweg", "Bergwanderweg", "Alpinwanderweg"}
+CATEGORY_MAP = {"0": "Wanderweg", "1": "Bergwanderweg", "2": "Alpinwanderweg",
+                "Wanderweg": "Wanderweg", "Bergwanderweg": "Bergwanderweg",
+                "Alpinwanderweg": "Alpinwanderweg"}
 
 def read_gpkg_geometry(blob):
     if not blob or blob[:2] != b"GP":
@@ -49,7 +52,7 @@ def import_data(source, output, limit=None):
         escaped_cat = category.replace('"','""')
         query = f'SELECT "{escaped_geom}" AS geom, "{escaped_cat}" AS category FROM "{escaped_table}" WHERE "{escaped_cat}" IS NOT NULL'
         for row in src.execute(query):
-            label = str(row["category"]).strip()
+            label = CATEGORY_MAP.get(str(row["category"]).strip())
             if label not in VALID or not row["geom"]:
                 continue
             shape = read_gpkg_geometry(row["geom"])
@@ -68,7 +71,9 @@ def import_data(source, output, limit=None):
                 if len(coords) < 2:
                     continue
                 minlon, minlat, maxlon, maxlat = wgs.bounds
-                length_km = round(line.length / 1000, 3) if srid in (2056, 21781) else round(line.length / 1000, 3)
+                if srid not in (2056, 21781):
+                    raise ValueError("Only Swiss metric CRS EPSG:2056 or EPSG:21781 supported")
+                length_km = round(line.length / 1000, 3)
                 inserted = dst.execute(
                     "INSERT INTO trail_segments(category,length_km,coords_json) VALUES(?,?,?)",
                     (label, length_km, json.dumps(coords, separators=(",",":"))))
