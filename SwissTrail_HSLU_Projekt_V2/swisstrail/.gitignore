@@ -1,0 +1,13 @@
+# Generated local and imported data
+trails.db
+*.gpkg
+*.gpkg.zip
+*.sqlite
+*.db
+.env
+__pycache__/
+.pytest_cache/
+venv/
+.venv/
+.vscode/
+.DS_Store
