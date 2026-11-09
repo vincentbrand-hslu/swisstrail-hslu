@@ -179,6 +179,93 @@ function routePopup(route){
   if(route.notes){const note=document.createElement('p');note.textContent=route.notes;root.append(note);}
   return root;
 }
+
+// Create a standards-based GPX 1.1 export of a user's own route.
+// NOTE: coordinates describe manually drawn 2D support points.
+// No auto-routing, timestamps, elevation or live trail-condition data is implied.
+function gpxEscape(value) {
+  return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&apos;'
+  })[ch]);
+}
+function routeToGpx(route) {
+  const points=Array.isArray(route.points)?route.points:[];
+  if(points.length<2 || points.some(p=>!Number.isFinite(Number(p.lat))||!Number.isFinite(Number(p.lon)))) {
+    throw new Error('Die Route enthält keine gültigen Koordinaten.');
+  }
+  const description=[route.notes, 'Schwierigkeit (selbst eingeschätzt): '+route.difficulty,
+    'SwissTrail: manuell eingezeichnete Stützpunkte, keine automatische Wegführung.'].filter(Boolean).join(' | ');
+  const trkpts=points.map(p=>'<trkpt lat="'+Number(p.lat).toFixed(7)+'" lon="'+Number(p.lon).toFixed(7)+'"></trkpt>').join('\n');
+  return '<?xml version="1.0" encoding="UTF-8"?>\n'+
+    '<gpx version="1.1" creator="SwissTrail" xmlns="http://www.topografix.com/GPX/1/1">'+
+    '<metadata><name>'+gpxEscape(route.name)+'</name></metadata>'+
+    '<trk><name>'+gpxEscape(route.name)+'</name><desc>'+gpxEscape(description)+'</desc>'+
+    '<trkseg>'+trkpts+'</trkseg></trk></gpx>';
+}
+function downloadRouteGpx(route) {
+  try {
+    const payload=routeToGpx(route);
+    const file=new Blob([payload],{type:'application/gpx+xml;charset=utf-8'});
+    const url=URL.createObjectURL(file);
+    const link=document.createElement('a');
+    link.href=url;
+    link.download=(String(route.name||'swisstrail-route').normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'-')
+      .replace(/^-+|-+$/g,'').slice(0,64)||'swisstrail-route')+'.gpx';
+    document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
+    toast('GPX-Datei vorbereitet. Sie enthält die selbst eingezeichneten Stützpunkte.');
+  } catch(err) {
+    toast('GPX-Export fehlgeschlagen: '+err.message);
+  }
+}
+function renderFilteredRoutes() {
+  const list=$('routeList');
+  if(!list || !user || !routesCache.length)return;
+  const query=($('routeFilter')?.value||'').trim().toLocaleLowerCase('de-CH');
+  const sorting=$('routeSort')?.value||'new';
+  const filtered=routesCache.filter(route=>
+    [route.name,route.notes,route.difficulty].some(x=>String(x||'').toLocaleLowerCase('de-CH').includes(query))
+  ).slice();
+  if(sorting==='name')filtered.sort((a,b)=>a.name.localeCompare(b.name,'de-CH'));
+  else if(sorting==='long')filtered.sort((a,b)=>Number(b.length_km)-Number(a.length_km));
+  else if(sorting==='short')filtered.sort((a,b)=>Number(a.length_km)-Number(b.length_km));
+  list.replaceChildren();
+  const summary=$('routeSummary');
+  if(summary)summary.textContent=filtered.length+' von '+routesCache.length+' Touren angezeigt';
+  if(!filtered.length){
+    const empty=document.createElement('p');
+    empty.className='route-filter-empty';
+    empty.textContent='Keine passende Tour gefunden. Versuche einen anderen Suchbegriff.';
+    list.append(empty);
+    return;
+  }
+  filtered.forEach(route=>{
+    const card=document.createElement('article');card.className='saved-card';
+    const heading=document.createElement('h3');heading.textContent=route.name;
+    const stats=document.createElement('div');stats.className='route-stats';
+    [Number(route.length_km).toFixed(2)+' km',route.difficulty].forEach(value=>{
+      const chip=document.createElement('span');chip.className='route-stat';chip.textContent=value;stats.append(chip);
+    });
+    const description=document.createElement('p');
+    description.textContent=route.notes||'Eigene, auf der Karte eingezeichnete Route.';
+    const hint=document.createElement('small');
+    hint.textContent='Stützpunkt-Distanz · Schwierigkeit selbst eingeschätzt';
+    const actions=document.createElement('div');actions.className='saved-card-actions';
+    const show=document.createElement('button');show.textContent='Auf Karte ↗';show.onclick=()=>showRoute(route);
+    const gpx=document.createElement('button');gpx.textContent='GPX exportieren ↓';gpx.className='download-gpx';gpx.onclick=()=>downloadRouteGpx(route);
+    const del=document.createElement('button');del.className='danger';del.textContent='Löschen';
+    del.onclick=async()=>{
+      if(!confirm('Route endgültig löschen?'))return;
+      try{await callApi('/api/routes/'+route.id,{method:'DELETE'});await loadRoutes();toast('Route gelöscht.');}
+      catch(err){toast(err.message);}
+    };
+    actions.append(show,gpx,del);
+    card.append(heading,stats,description,hint,actions);
+    list.append(card);
+  });
+}
+
 async function loadRoutes(){
   const box=$('routeList');
   routeLayers.forEach(layer=>map&&map.removeLayer(layer));routeLayers=[];
@@ -187,21 +274,11 @@ async function loadRoutes(){
     routesCache=await callApi('/api/routes');
     $('routeCount').textContent=routesCache.length;box.replaceChildren();
     if(!routesCache.length){box.innerHTML='<div class="empty-state"><h2>Noch keine Routen</h2><p>Öffne die Karte und klicke auf „Route zeichnen“.</p><button class="primary" id="goDraw">Route zeichnen →</button></div>';$('goDraw').onclick=()=>{switchTab('explore');setDraw(true);};return;}
-    routesCache.forEach(route=>{
-      if(map){const points=route.points.map(p=>[p.lat,p.lon]);const poly=L.polyline(points,{color:'#186f91',weight:6,opacity:.9}).addTo(map);poly.routeId=route.id;poly.bindPopup(routePopup(route));routeLayers.push(poly);}
-      const card=document.createElement('article');card.className='saved-card';
-      const heading=document.createElement('h3');heading.textContent=route.name;
-      const stats=document.createElement('div');stats.className='route-stats';
-      [Number(route.length_km).toFixed(2)+' km',route.difficulty].forEach(t=>{const chip=document.createElement('span');chip.className='route-stat';chip.textContent=t;stats.append(chip);});
-      const desc=document.createElement('p');desc.textContent=route.notes||'Eigene, auf der Karte eingezeichnete Route.';
-      const hint=document.createElement('small');hint.textContent='Distanz: Stützpunktmessung · Schwierigkeit: Selbsteinschätzung';
-      const actions=document.createElement('div');actions.className='saved-card-actions';
-      const show=document.createElement('button');show.textContent='Auf Karte ↗';show.onclick=()=>showRoute(route);
-      const del=document.createElement('button');del.className='danger';del.textContent='Löschen';del.onclick=async()=>{if(!confirm('Route endgültig löschen?'))return;try{await callApi('/api/routes/'+route.id,{method:'DELETE'});await loadRoutes();toast('Route gelöscht.');}catch(e){toast(e.message);}};
-      actions.append(show,del);card.append(heading,stats,desc,hint,actions);box.append(card);
-    });
+    renderFilteredRoutes();
   }catch(e){toast(e.message);}
 }
+$('routeFilter')?.addEventListener('input',renderFilteredRoutes);
+$('routeSort')?.addEventListener('change',renderFilteredRoutes);
 $('drawToggle').onclick=()=>{if(!user){openAuth();toast('Zum Speichern von Routen bitte anmelden.');return;}setDraw(!drawMode);};
 $('undoPoint').onclick=()=>{drawPoints.pop();drawPreview();};
 $('finishRoute').onclick=()=>{
