@@ -219,6 +219,22 @@ $('routeForm').onsubmit=async e=>{
     modal('route',false);setDraw(false);await loadRoutes();toast(`Route gespeichert: ${Number(route.length_km).toFixed(2)} km`);showRoute(route);
   }catch(err){$('routeError').textContent=err.message;$('routeError').classList.remove('hidden');}finally{btn.disabled=false;}
 };
+// Interactive destination cards are keyboard-accessible native buttons.
+document.querySelectorAll('[data-discover-lat]').forEach(button=>{
+  button.addEventListener('click',()=>{
+    switchTab('explore');
+    if(map){map.flyTo([Number(button.dataset.discoverLat),Number(button.dataset.discoverLon)],Number(button.dataset.discoverZ),{duration:1.15});}
+    const name=button.querySelector('.destination-bottom strong')?.textContent||'Region';
+    toast(name+' entdecken: Klicke auf die Wanderwege für die Details.');
+    document.querySelector('.mapcard')?.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+  });
+});
+$('helpClose')?.addEventListener('click',()=>$('mapHelp')?.classList.add('hidden'));
+$('officialTrailToggle')?.addEventListener('change',()=>{
+  const label=$('mapHelpText');
+  if(label)label.textContent=$('officialTrailToggle').checked?'Klicke auf einen Wanderweg, um Länge und Kategorie zu entdecken.':'Weg-Analyse aus. Klicke in die Karte, um einen Ort zu speichern.';
+  $('mapHelp')?.classList.remove('hidden');
+});
 initMap();callApi('/api/me').then(setUser).catch(()=>setUser(null));
 
 $('officialTrailToggle').addEventListener('change',()=>toast($('officialTrailToggle').checked?'Klicke in die Karte nahe an einen Wanderweg (max. 65 m).':'Wegabfrage deaktiviert – Orte können wieder gemerkt werden.'));
