@@ -235,6 +235,24 @@ $('officialTrailToggle')?.addEventListener('change',()=>{
   if(label)label.textContent=$('officialTrailToggle').checked?'Klicke auf einen Wanderweg, um Länge und Kategorie zu entdecken.':'Weg-Analyse aus. Klicke in die Karte, um einen Ort zu speichern.';
   $('mapHelp')?.classList.remove('hidden');
 });
+// The expedition landing page is progressively enhanced: maps still work without these buttons.
+function goToMap(lat=null,lon=null,zoom=null) {
+  switchTab('explore');
+  const card=document.querySelector('.mapcard');
+  if(card)card.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+  if(map&&lat!==null&&lon!==null)map.flyTo([lat,lon],zoom||13,{duration:window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:1.1});
+  else if(map)setTimeout(()=>map.invalidateSize(),100);
+}
+$('heroExplore')?.addEventListener('click',()=>goToMap());
+$('bannerExplore')?.addEventListener('click',()=>goToMap());
+$('surpriseMe')?.addEventListener('click',()=>{
+  const regions=Array.from(document.querySelectorAll('[data-discover-lat]'));
+  if(!regions.length)return;
+  const next=regions[Math.floor(Math.random()*regions.length)];
+  const label=next.querySelector('.destination-bottom strong')?.textContent||'Schweiz';
+  goToMap(Number(next.dataset.discoverLat),Number(next.dataset.discoverLon),Number(next.dataset.discoverZ));
+  toast('Dein nächstes Abenteuer: '+label+'! Klicke auf einen Wanderweg.');
+});
 initMap();callApi('/api/me').then(setUser).catch(()=>setUser(null));
 
 $('officialTrailToggle').addEventListener('change',()=>toast($('officialTrailToggle').checked?'Klicke in die Karte nahe an einen Wanderweg (max. 65 m).':'Wegabfrage deaktiviert – Orte können wieder gemerkt werden.'));
