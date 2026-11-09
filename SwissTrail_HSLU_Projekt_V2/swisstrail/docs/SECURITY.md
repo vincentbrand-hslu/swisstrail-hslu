@@ -1,23 +1,29 @@
-# Security-Konzept (Basis für Unterrichtsprojekt)
+# SwissTrail – Security-Konzept
 
-## Umgesetzte Massnahmen
-- `hashlib.scrypt` statt Klartext-Passwörtern, per Konto zufälliger Salt.
-- Session-Token sind zufällig, in SQLite nur als SHA-256-Digest hinterlegt.
-- `HttpOnly` und `SameSite=Lax` Cookies; in der VM TLS und `SWISSTRAIL_SECURE_COOKIE=1`.
-- Datenbankzugriffe parameterisiert, keine SQL-Stringinterpolation von Nutzereingaben.
-- Pydantic-Eingabekontrollen und maximale Text-/Punktlängen.
-- Server prüft bei allen sensiblen CRUD-Endpunkten den Eigentümer.
-- Cross-Origin-POST/PATCH/DELETE mit fremdem Origin-Header werden geblockt.
-- Frontend escaped oder setzt vom Nutzer stammende Texte via `textContent`.
-- Caddy-Deployment enthält HTTPS und grundlegende Sicherheits-Header.
+## Implementierte Massnahmen
+- Passwörter per `hashlib.scrypt` mit individuellem Salt, keine Klartextspeicherung.
+- Zufällige Session-Tokens: in SQLite nur SHA-256-Digest; Cookie `HttpOnly`, `SameSite=Lax`, im Railway-HTTPS-Deployment `Secure`.
+- `user_id`-basierte Zugriffskontrolle für Orte und Routen; fremde Datensätze werden nicht ausgegeben.
+- Parameterisierte SQL-Statements und Pydantic-Eingabevalidierung mit Längen-/Koordinatenlimits.
+- Fremde `Origin`-Header bei POST/PATCH/DELETE werden abgelehnt.
+- Frontend: Textausgabe via `textContent` beziehungsweise HTML-Escaping.
+- Offizielle Wanderwege als schreibgeschützte SQLite-Datenbank.
+- Keine Zugangsdaten, Session-Tokens, SQLite-Benutzerdateien oder `.env` in Git committen.
 
-## Vor öffentlichem produktivem Betrieb zusätzlich notwendig
-- Rate-Limiting für Login/Registrierung, E-Mail-Verifizierung/Passwort-Reset.
-- Vollständiger CSRF-Schutz mit Token, insbesondere für Browser ohne Origin-Header; ggf. Trusted-Proxies.
-- Infrastruktur-Updates, Monitoring, SQLite-Backups und Wiederherstellung testen.
-- Geregelter Zugriff auf VM / Firewall / Benutzerrechte, realen DNS-Namen konfigurieren.
-- Datenschutz, Aufbewahrung, Löschung, Auskunft und Datenschutzerklärung prüfen.
-- TLS-Zertifikat über öffentliche DNS und Port 80/443 nur bei freigeschalteter Infrastruktur.
+## Verbleibende Risiken
+- Kein Login-Rate-Limiting und keine MFA; nicht für öffentlichen Hochlastbetrieb gehärtet.
+- Kein vollständiger CSRF-Token-Schutz (Origin-/SameSite-Abwehr ist nur Basisschutz).
+- Keine Self-Service-Kontolöschung, Passwortreset oder formale Datenschutzprüfung.
+- Volume-Persistenz ist **kein Backup**; Backup- und Wiederherstellungsprobe noch zu dokumentieren.
+- Drittanbieter: GeoAdmin, Leaflet CDN, Webfonts; Netzwerk nötig.
+- Wanderwegkategorie und Länge liefern keine Sicherheitsgarantie: keine Live-Sperrungen, Wetter, Schnee oder Lawinenlage.
 
-## Restrisiko
-Nicht für sicherheitskritische Navigation oder öffentliches Mehrmandanten-Produktionssystem geeignet. Benutzerdefinierte Routenschwierigkeit ist nicht objektiv verifiziert.
+## Nachweise vor Abgabe
+- [ ] Repo-History auf Credentials prüfen
+- [ ] HTTPS / Secure Cookie am Browser nachweisen
+- [ ] Falsche Logins und fremde Datensätze ausprobieren
+- [ ] Manuelles Testprotokoll mit Datum und Tester ergänzen
+- [ ] Zugriff auf Railway und GitHub auf Projektteam begrenzen
+- [ ] Backup/Restore und Datenschutzfragen dokumentieren
+
+**Verwendung:** HSLU-Schulprototyp, keine sichere Navigationsanwendung.
