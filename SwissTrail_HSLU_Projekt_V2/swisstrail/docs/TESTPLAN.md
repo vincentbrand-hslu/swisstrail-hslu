@@ -1,35 +1,37 @@
-# Testplan / Qualitätssicherung
+# Testplan und Testnachweise – SwissTrail
 
-## Automatisierte Unit- und Integrationsprüfungen
-Auf dem Entwicklungsgerät: `python -m pytest -q`.
+## Testebenen
+**Unit:** Distanzformel und geometrische Nähe eines Wegsegments. **Integration:** Registrierung, Login, CRUD Orte und Routen, Nutzertrennung, Validierung, externe-API-Fehler. **System:** Browser über HTTPS, swisstopo-Karte, Suche, Wegklick, Speichern und Reload.
 
-Abgedeckt:
-- Account registrieren, Login, Logout, ungültige Anmeldung, doppelte Benutzernamen.
-- Privater CRUD-Lebenszyklus von gespeicherten Orten.
-- Distanzformel und negative Eingabevalidierung (Punktanzahl, keine Null-Strecke, erlaubte Schwierigkeit).
-- Route-CRUD und strikte Datentrennung zweier Konten (404 statt fremde Daten).
-- Cross-Origin-Blockade bei Cookie-Schreibzugriffen.
-- Fehlerbehandlung bei nicht erreichbarem externem SearchServer (502).
-- HTTP-Startseite, API-Health und OpenAPI-Dokumentation.
+## Automatische Testausführung
+```bash
+cd SwissTrail_HSLU_Projekt_V2/swisstrail
+python -m pip install -r requirements.txt
+python -m pytest -q
+# Bei laufendem Server: python scripts/system_check.py
+```
+GitHub Actions: `.github/workflows/tests.yml`, `.github/workflows/production-smoke.yml`.
 
-## Integrations- und System-Smoke-Test (laufender Server)
-1. `python -m uvicorn app:app --reload` starten.
-2. `python scripts/system_check.py` ausführen.
-3. Browser öffnen, Karte prüfen und nach **Luzern** suchen; externe Netzwerkverbindung nötig.
-4. Account registrieren; Ort speichern und löschen.
-5. „Route zeichnen“ anklicken, drei Punkte entlang eines Wegs setzen, „Fertig“ und Schwierigkeit auswählen.
-6. Prüfen: km-Anzeige vor dem Speichern; nach Speichern Route anklicken und km/Schwierigkeit im Popup prüfen.
-7. Browser neu laden: Route und Merkliste weiterhin vorhanden.
-8. Mit zweitem Account prüfen: fremde Routen bleiben unsichtbar.
-9. `docker compose up --build -d`, danach dieselben Schritte über http://127.0.0.1:8000 ausführen.
+## Bereits beobachtete Nachweise
+- GitHub Actions «SwissTrail tests», Run **42632719648**, am 09.11.2026 erfolgreich; **nach weiteren Commits neu überprüfen**.
+- GitHub Actions «SwissTrail production smoke test», Run **42633469894**, am 09.11.2026 erfolgreich; echte Segmentantworten für (47.056,8.485), (46.977,8.255), (47.009,8.524).
+- Railway-Deployment des HSLU-Prototyps erfolgreich; Volume `/data` vorhanden.
+- Nutzer bestätigte am 09.11.2026, dass der Wanderwegklick im Browser funktioniert. Das ersetzt nicht das vollständige manuelle Systemtestprotokoll.
 
-## Testprotokoll (vom Team auszufüllen)
-| Datum | Umgebung / Browser | Testfall | Soll | Ist | Status | Tester |
-|---|---|---|---|---|---|---|
-| | | Ortssuche Luzern | Treffer | | | |
-| | | Karteneinblendung | Wanderwege sichtbar | | | |
-| | | Route 3 Punkte | Länge und Schwierigkeit | | | |
-| | | Dauerhafte Speicherung | Nach Neustart vorhanden | | | |
-| | | VM-Demo | extern erreichbar | | | |
+## Manuelle Browser-Testfälle (nicht erfunden, vom Team auszufüllen)
+| ID | Test | Erwartet | Datum/Browser/Testperson | Ist-Ergebnis | Status |
+|---|---|---|---|---|---|
+| M01 | Desktop und Smartphone öffnen | Layout und Karte bedienbar | | | Offen |
+| M02 | Region Rigi/Pilatus/Chur klicken | Karte zentriert und zoomt | | | Offen |
+| M03 | Wanderweg anklicken | Popup mit km und amtlicher Kategorie | | | Offen |
+| M04 | Abseits eines Wanderwegs klicken | Kein falsches Segment, Hinweis | | | Offen |
+| M05 | Nach Luzern suchen | GeoAdmin-Ergebnisse, Kartensprung | | | Offen |
+| M06 | Konto registrieren/anmelden | Login erfolgreich | | | Offen |
+| M07 | Ort und Notiz speichern/bearbeiten/löschen | CRUD erfolgreich | | | Offen |
+| M08 | Eigene Route speichern/anzeigen/löschen | km und eigene Schwierigkeit | | | Offen |
+| M09 | Abmelden, neu anmelden, Reload | Einträge bleiben vorhanden | | | Offen |
+| M10 | Zweitkonto | Daten des Erstkontos unsichtbar | | | Offen |
+| M11 | Redeploy mit gespeichertem Ort | Eintrag bleibt nach Deployment | | | Offen |
+| M12 | Keyboard / reduzierte Bewegung | Buttons erreichbar, ruhige Animationen | | | Offen |
 
-**Wichtig:** Diese manuellen Tests sind noch nicht ausgeführt und dürfen im Projektbericht nicht als bestanden behauptet werden.
+Die Spalten mit Beobachtung und Status sind erst nach tatsächlichem Test zu befüllen. Kein manueller Test wird pauschal als bestanden behauptet.
