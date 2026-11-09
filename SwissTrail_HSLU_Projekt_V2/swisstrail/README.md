@@ -51,4 +51,4 @@ SQLite auf einem Volume ist einfach und erfüllt den DB-Teil des Auftrags; ein V
 - [Projektplanung und Zuständigkeiten](docs/PROJEKTPLAN.md)
 
 ## Team & Credits
-**Teamnamen, echte Rollen und individuelle Beiträge müssen vom Team ergänzt werden**; keine Namen erfunden. Daten: swisstopo / geo.admin.ch, Leaflet; Technik: FastAPI, Pydantic, SQLite, shapely, pyproj, httpx, Railway. Bildungsprototyp im Rahmen des HSLU-Moduls «Angewandte Informatik».
+**Projektteam:** Vincent, Marlon, Enzkar und Kevin. Die genaue persönliche Aufgabenverteilung und individuelle Beiträge müssen vom Team mit echten Nachweisen ergänzt werden. Daten: swisstopo / geo.admin.ch, Leaflet; Technik: FastAPI, Pydantic, SQLite, shapely, pyproj, httpx, Railway. Bildungsprototyp im Rahmen des HSLU-Moduls «Angewandte Informatik».
