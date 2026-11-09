@@ -159,3 +159,31 @@ footer{margin-top:0}
 @media(max-width:710px){.content.expedition-content{padding:17px 14px 40px}.expedition-hero{border-radius:17px;min-height:465px}.hero-content{padding:54px 26px 75px}.hero-kicker{font-size:9px;letter-spacing:1.1px;gap:7px}.expedition-hero h1{font-size:clamp(41px,9vw,66px);letter-spacing:-3px}.expedition-hero h1 em{letter-spacing:-2px}.expedition-hero p{font-size:13px}.hero-actions button{padding:14px 15px;font-size:12px}.hero-bottom{left:20px;right:20px;font-size:8px}.hero-bottom>span:first-child{display:none}.expedition-stats{padding:14px;gap:8px}.expedition-stats>div:not(.stats-cta){gap:6px}.expedition-stats .stat-icon{width:29px;height:29px;font-size:17px}.expedition-stats strong{font-size:18px;letter-spacing:-.7px}.expedition-stats small{font-size:9px}.destination-grid{grid-template-columns:1fr 1fr}.destination{min-height:220px}.destination:last-child{grid-column:1/-1;min-height:205px}.destination-top span{display:none}.destination-bottom strong{font-size:29px}.destination-bottom small{display:block;font-size:10px}.experience-banner{padding:30px 25px;min-height:260px}.team-people{grid-template-columns:repeat(2,auto)}}
 @media(max-width:430px){.hero-actions{flex-direction:column;align-items:stretch}.hero-actions button{width:100%;text-align:left}.expedition-hero{min-height:500px}.expedition-stats .stat-icon{display:none}.expedition-stats strong{font-size:16px}.expedition-stats small{font-size:8px}.destination-grid{grid-template-columns:1fr}.destination:last-child{grid-column:auto}.destination{min-height:235px}}
 @media(prefers-reduced-motion:reduce){.hero-sky,.hero-scroll span{animation:none!important}}
+
+/* Route toolkit: useful product features without disturbing the map */
+.route-toolkit{padding:24px 26px;margin:0 0 22px;background:linear-gradient(120deg,#ffffff 0%,#f2f7ed 100%);border:1px solid #dce8db;border-radius:16px;box-shadow:0 12px 32px #163f2720}
+.toolkit-intro .eyebrow{margin:0 0 6px}
+.toolkit-intro strong{display:block;font:800 24px Manrope,sans-serif;letter-spacing:-.9px;color:#1d4936}
+.toolkit-intro p{margin:5px 0 18px;color:#789181;font-size:12px;line-height:1.7}
+.route-tools{display:grid;grid-template-columns:minmax(0,2fr) minmax(180px,1fr);gap:12px}
+.route-field{display:flex;flex-direction:column;gap:7px;color:#527463;font-size:11px;font-weight:800}
+.route-field input,.route-field select{width:100%;padding:13px 14px;min-height:46px;background:white;color:#1b3a2b;border:1px solid #cadae0;border-radius:9px;outline-offset:2px}
+.route-field input:focus,.route-field select:focus{border-color:#4f9870}
+.route-summary{font-size:11px;color:#7d9889;margin:13px 0 0}
+.saved-card-actions .download-gpx{border:1px solid #bfddc6!important;background:#eaf7eb!important;color:#286346!important;font-weight:800}
+.saved-card-actions .download-gpx:hover{background:#d5eedc!important}
+.route-filter-empty{background:#eef5ec;border-radius:14px;padding:25px;color:#507866}
+.difficulty-legend{background:#f8fbf7;padding:19px 24px;border-top:1px solid #e1e9df}
+.legend-title{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:13px}
+.legend-title strong{font-size:10px;letter-spacing:1.4px;color:#30624c}
+.legend-title span{font-size:11px;color:#829989}
+.legend-types{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.legend-types>div{display:grid;grid-template-columns:13px 1fr;column-gap:8px;align-items:center;border:1px solid #e0e9de;border-radius:10px;padding:13px 10px;background:white}
+.legend-color{width:11px;height:27px;border-radius:4px;grid-row:span 2;align-self:start}
+.legend-yellow{background:#e2bc17}.legend-red{background:linear-gradient(180deg,#df433b 0%,#df433b 34%,#fff 34%,#fff 67%,#df433b 67%)}
+.legend-blue{background:linear-gradient(180deg,#477aba 0%,#477aba 34%,#fff 34%,#fff 67%,#477aba 67%)}
+.legend-types strong{font-size:11px;color:#315a46}
+.legend-types small{font-size:10px;line-height:1.4;color:#829589;grid-column:2}
+.difficulty-legend>p{font-size:10px;color:#819589;line-height:1.6;margin:12px 0 0}
+@media(max-width:900px){.legend-types{grid-template-columns:1fr 1fr}.legend-types>div:last-child{grid-column:1/-1}}
+@media(max-width:560px){.route-tools{grid-template-columns:1fr}.route-toolkit{padding:19px 16px}.legend-types{grid-template-columns:1fr}.legend-types>div:last-child{grid-column:auto}.difficulty-legend{padding:15px}.legend-title{align-items:flex-start;flex-direction:column;gap:3px}}
