@@ -1,64 +1,46 @@
-# SwissTrail – Software-Spezifikation (HSLU ANG_INF)
+# SwissTrail – Software-Spezifikation (aktuelle Version)
+## Projektidee und Kundenprofil
+Smart Travel / Tourismusbüro: Schweizer Wanderwege und Orte suchen und eigene Tourideen verwalten. Schulprototyp, keine sicherheitskritische Navigation.
 
-## 1. Kundenprofil und Problem
-**Smart Travel / Tourismusbüro.** Besucher möchten Schweizer Wanderwege auf einer Karte sehen, Orte finden und eigene geplante Strecken mit Distanz und Schwierigkeitsgrad organisieren. SwissTrail ist ein **Lernprototyp**, kein sicherheitskritisches Navigationsgerät.
+## Funktionale Anforderungen (mit Abnahmekriterium)
+| ID | Funktion | Akzeptanzkriterium |
+|---|---|---|
+| F01 | Basiskarte / Wanderwege | GeoAdmin-WMTS-Kacheln laden; Wanderlayer schaltbar |
+| F02 | Ortssuche | FastAPI-GET `/api/geoadmin/search` liefert Treffer als JSON |
+| F03 | Wegabschnitt anklicken | GET `/api/trails/nearby` findet nächstes Segment innerhalb 65 m, Popup mit Länge und amtlicher Kategorie |
+| F04 | Benutzerkonto | Registrieren, anmelden, abmelden; Konto in SQLite |
+| F05 | Persönliche Merkliste | Orte speichern, Notizen ändern, Orte löschen; Benutzertrennung |
+| F06 | Eigene Routen | 2–120 Punkte zeichnen; 2D-Kilometer, gewählte Schwierigkeit, speichern, aufrufen, löschen |
+| F07 | Regionen entdecken | Regionskarten öffnen und zentrieren die Karte |
+| F08 | Gesundheitsstatus | GET `/api/health` zeigt Backendstatus |
 
-## 2. Funktionale Anforderungen
-| ID | Funktion | Abnahmekriterium | Status |
-|---|---|---|---|
-| F01 | Schweizer Basiskarte laden | Basiskarte im Browser sichtbar bei Internetzugang | implementiert, Live-Test nötig |
-| F02 | Wanderwege sichtbar schalten | GeoAdmin-WMTS-Layer per Knopfdruck | implementiert, Live-Test nötig |
-| F03 | Orte suchen | Suche liefert per eigenem Backend GeoAdmin-Orte | implementiert, Live-Test nötig |
-| F04 | Benutzer registrieren/anmelden | Benutzer in SQLite, passwortgesicherte Anmeldung | implementiert, automatisiert getestet |
-| F05 | Orte verwalten | Anlegen, Auflisten, Notiz ändern, Löschen | implementiert, automatisiert getestet |
-| F06 | Route zeichnen | Min. zwei Stützpunkte auf interaktiver Karte | implementiert, Browser-Test nötig |
-| F07 | Distanz berechnen | Summe geodätischer 2D-Längen der Teilstrecken, km | implementiert, getestet |
-| F08 | Schwierigkeit erfassen | Nutzer wählt Wanderweg/Bergwanderweg/Alpinwanderweg/nicht bewertet | implementiert, Browser-Test nötig |
-| F09 | Route speichern und anklicken | Benutzerbezogen in SQLite; Klick auf Linienzug zeigt Länge und Schwierigkeit | implementiert, API getestet; Browser-Test nötig |
-| F10 | Routen löschen | Nur Eigentümer darf löschen | implementiert, getestet |
-| F11 | Gesundheitsschnittstelle | GET /api/health | implementiert, getestet |
+Die geforderten zwei wesentlichen Operationen sind die GeoAdmin-Ortssuche und die Wegsegment-Abfrage; CRUD-Funktionen gehen darüber hinaus.
 
-**Wichtig:** Die WMTS-Wanderwege bestehen aus Rasterkacheln. GeoAdmin stellt für diesen Layer keine direkte Abfrage eines einzelnen Weges bereit. Die Routen werden durch Nutzer **manuell** digitalisiert, nicht automatisiert ans offizielle Wanderwegnetz angepasst. Berechnete Streckenlänge ist **nicht** die Länge einer automatisch erkannten Route. Schwierigkeit ist eine **Selbsteinschätzung** des Benutzers, keine aus dem GeoAdmin-Layer abgeleitete Klassifizierung. Keine Wanderzeit, Höhenmeter, SAC-T-Skala oder begehbaren Gehweganweisungen.
+## Nichtfunktionale Anforderungen
+Browserbasiert, responsive HTML/CSS/JavaScript/Leaflet. REST-API mit HTTP/JSON, Pydantic-Validierung, verständliche Statuscodes. SQLite lokal und auf persistentem Volume. HTTPS und sichere Cookie-Sessions. Automatisierte Tests und dokumentierte manuelle Systemtests. Abhängigkeit von GeoAdmin für Live-Kartendarstellung und Suchergebnisse.
 
-## 3. Nichtfunktionale Anforderungen
-- Browserbasiert, responsiv, HTML/CSS/JavaScript; Karte mittels Leaflet.
-- Externer API-Zugriff via FastAPI-Backend (GeoAdmin SearchServer), WMTS-Kartenkacheln direkt im Browser.
-- SQLite-Datenbank-Datei über Neustarts hinweg erhalten; unter Docker als Volume.
-- Cookies mit HttpOnly, SameSite=Lax, bei HTTPS Secure=1; Hashing mittels scrypt, individuelle Salts.
-- Benutzertrennung serverseitig geprüft; Passwort/API-Keys nie im Repository.
-- In Entwicklung schnell lokal startbar; VM über Docker Compose / Caddy / TLS konfigurierbar.
-- Netzabhängigkeit: Karte, Leaflet-Bibliothek, Webfonts und API benötigen Internet.
-
-## 4. Architektur (C4-nahe Darstellung)
+## Architektur (C4-nahe Komponenten)
 ```mermaid
 flowchart TB
-  User[Wandernde / Browser]
-  UI[HTML CSS JavaScript / Leaflet]
-  API[FastAPI eigener REST-Webservice]
-  DB[(SQLite Benutzer, Sessions, Orte, Routen)]
-  GEO[GeoAdmin SearchServer / Layer-Metadaten]
-  WMTS[GeoAdmin WMTS Basiskarte und Wanderwege]
-  User --> UI
-  UI -->|JSON HTTP / HTTPS| API
-  API --> DB
-  API -->|HTTP JSON| GEO
-  UI -->|HTTPS Kartenkacheln| WMTS
+ U[Benutzer / Browser] --> F[Frontend: HTML CSS JavaScript Leaflet]
+ F -->|HTTPS JSON| A[FastAPI REST-Backend]
+ F -->|WMTS Kartenkacheln| W[GeoAdmin WMTS]
+ A -->|HTTPS REST| S[GeoAdmin SearchServer]
+ A --> D[(SQLite Benutzer Sessions Orte Routen)]
+ A --> T[(SQLite RTree Wanderwegabschnitte)]
+ G[swisstopo swissTLM3D GeoPackage] -. einmaliger Import .-> T
+ D --> V[Railway Volume /data]
+ T --> V
 ```
 
-## 5. Datenmodell
-- `users`: id, username (unique), password_salt, password_hash, created_at.
-- `sessions`: token_hash, user_id, expires_at.
-- `places`: id, user_id, name, lat, lon, notes, created_at.
-- `routes`: id, user_id, name, difficulty, notes, points_json, length_km, created_at.
-- Relationen: jeder Ort und jede Route gehört genau einem Nutzer. SQLite-Foreign-Keys eingeschaltet.
+## Datenmodell
+`users(id,username,password_salt,password_hash,created_at)`; `sessions(token_hash,user_id,expires_at)`; `places(id,user_id,name,lat,lon,notes,created_at)`; `routes(id,user_id,name,difficulty,notes,points_json,length_km,created_at)`. Nutzerbezogene Datensätze referenzieren `user_id`.
 
-## 6. Technische Entscheidungen und Trade-offs
-1. **SQLite:** Keine externen Datenbankdienste, Datei im Docker-Volume; bei vielen gleichzeitigen Schreibenden begrenzt.
-2. **FastAPI:** Eigene JSON-REST-API, Validierung mit Pydantic, Swagger `/docs`.
-3. **WMTS + Nutzer-Polylinien:** Offizielle Karte direkt nutzbar; kein Graph-basiertes Routing oder automatische Zuordnung einer angeklickten WMTS-Linie möglich.
+Separate amtliche Datenbank `trails.db`: `trail_segments(id,category,length_km,coords_json)` und `trail_index(id,min_lon,max_lon,min_lat,max_lat)` als RTree. Beim Klick: räumliche Vorauswahl, Abstand zur Linie prüfen, nächsten passenden Abschnitt ausliefern.
 
-## 7. Bekannte Einschränkungen
-- Distanz ist die kürzeste Verbindung zwischen den gesetzten Punkten (sum of segments); Kurven zwischen Punkten, 3D-Gelände und Höhenmeter fehlen. Für bessere Genauigkeit viele Punkte entlang des Wegs setzen.
-- Schwierigkeit ist nicht automatisch validiert. Wanderweg-Kategorien sind keine zugesicherten aktuellen Bedingungen. Vor Tour die offiziellen Warnungen, Beschilderung, Wetter- und Wegsperrungen prüfen.
-- Kein Offline-Modus. Keine produktionsreife Authentifizierungsplattform oder Rate-Limiting für öffentlichen Hochlastbetrieb.
-- Der Server ist auf einer VM erst tatsächlich verfügbar, **wenn** die VM bereitgestellt und der Dienst dort gestartet wurde.
+## Technische Entscheidungen und Einschränkungen
+1. SQLite statt Fremd-DB-Service: einfach, Datei auf Volume, begrenzte Schreibparallelität.
+2. FastAPI/Pydantic: selbst entwickelte REST-Schnittstelle, automatische Validierung.
+3. WMTS plus GeoPackage: anschaulicher Kartenlayer und getrennte Vektorsuche.
+
+Die amtliche Kategorie ist nicht SAC T1–T6. Segmentlänge ist nicht Gesamtroutenlänge. Eigene Route ist Haversine-2D-Verbindung der Klickpunkte, keine automatische Wegführung, keine Höhenmeter und keine aktuelle Sperr-/Wetterlage.
