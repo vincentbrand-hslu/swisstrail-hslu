@@ -2,7 +2,7 @@ name: SwissTrail tests
 
 on:
   push:
-    branches: [main, feature/swisstrail-v3-safe-migration, feature/abgabe-ui-polish]
+    branches: [main, feature/swisstrail-v3-safe-migration, feature/abgabe-ui-polish, feature/expedition-experience-e2e]
   pull_request:
 
 jobs:
@@ -21,3 +21,31 @@ jobs:
         run: node --check static/app.js
       - name: Run unit and integration tests
         run: python -m pytest -q
+
+
+  browser-system:
+    name: Browser-Systemtest (Chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: SwissTrail_HSLU_Projekt_V2/swisstrail
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install application and real-browser test dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install 'playwright>=1.55,<2'
+          python -m playwright install --with-deps chromium
+      - name: Check the actual HTML app with Chromium
+        run: python -m pytest -q tests/browser_e2e.py -v
+      - name: Attach visual browser proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: swisstrail-browser-screenshots
+          path: SwissTrail_HSLU_Projekt_V2/swisstrail/artifacts/*.png
+          if-no-files-found: ignore
