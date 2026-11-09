@@ -15,6 +15,8 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
+from trail_data import nearby_segment, DEFAULT_TRAILS_DB
+from trail_bootstrap import start_import_background
 
 BASE = Path(__file__).resolve().parent
 DB = Path(os.getenv("SWISSTRAIL_DB", str(BASE / "swisstrail.db")))
@@ -93,6 +95,11 @@ def init_db():
 init_db()
 
 
+@app.on_event("startup")
+def maybe_import_trails():
+    start_import_background()
+
+
 def password_hash(password: str, salt: bytes) -> str:
     return hashlib.scrypt(password.encode(), salt=salt, n=2**14, r=8, p=1).hex()
 
@@ -137,7 +144,7 @@ def make_session(resp: Response, user_id: int):
     with database() as con:
         con.execute("INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)",
                     (token_digest(token), user_id, expiry))
-    secure = os.getenv("SWISSTRAIL_SECURE_COOKIE", "0") == "1"
+    secure = os.getenv("SWISSTRAIL_SECURE_COOKIE", "1" if os.getenv("RAILWAY_ENVIRONMENT") else "0") == "1"
     resp.set_cookie("swisstrail_session", token, httponly=True, secure=secure,
                     samesite="lax", max_age=7 * 86400, path="/")
 
@@ -265,7 +272,7 @@ async def layer_info():
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "database": "sqlite", "geoadmin_layer": LAYER}
+    return {"status": "ok", "database": "sqlite", "geoadmin_layer": LAYER, "official_trails_loaded": DEFAULT_TRAILS_DB.is_file()}
 
 
 # A saved route is an explicitly user-drawn polyline; it is NOT computed
@@ -348,3 +355,14 @@ def delete_route(route_id: int, request: Request):
         if not cur.rowcount:
             raise HTTPException(404, "Route nicht gefunden.")
     return {"ok": True}
+
+
+@app.get("/api/trails/nearby")
+def official_trail_nearby(lat: float, lon: float):
+    """Return closest *individual segment*, not complete route."""
+    if not (45 <= lat <= 48.5 and 5 <= lon <= 11.5):
+        raise HTTPException(422, "Koordinaten ausserhalb der Schweiz.")
+    if not DEFAULT_TRAILS_DB.is_file():
+        raise HTTPException(503, "Offizielle Wegdaten noch nicht importiert. Siehe README.")
+    segment = nearby_segment(lat, lon, radius_m=65)
+    return {"found": bool(segment), "segment": segment}

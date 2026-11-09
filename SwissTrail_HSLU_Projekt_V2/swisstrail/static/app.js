@@ -2,7 +2,7 @@
 const $ = id => document.getElementById(id);
 let user = null, currentPoint = null, markers = [], selectedSearch = null;
 let authMode = 'login';
-let map, trailLayer, selectedMarker;
+let map, trailLayer, selectedMarker, highlightedOfficialSegment=null;
 let drawMode=false, drawPoints=[], drawLine=null, routeLayers=[], routesCache=[];
 const GEO_TILES = 'https://wmts.geo.admin.ch/1.0.0/';
 
@@ -48,7 +48,25 @@ function initMap(){
   L.control.zoom({position:'bottomright'}).addTo(map);
   L.tileLayer(GEO_TILES+'ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg',{attribution:'© <a href="https://www.swisstopo.admin.ch/" target="_blank">swisstopo</a>',maxZoom:18,maxNativeZoom:18}).addTo(map);
   trailLayer=L.tileLayer(GEO_TILES+'ch.swisstopo.swisstlm3d-wanderwege/default/current/3857/{z}/{x}/{y}.png',{attribution:'Wanderwege: swisstopo / GeoAdmin',opacity:0.92,maxZoom:18,maxNativeZoom:18}).addTo(map);
-  map.on('click',e=>{ if(drawMode){addDrawPoint(e.latlng);return;} currentPoint={lat:e.latlng.lat,lon:e.latlng.lng,name:'Mein Wanderziel'}; if(user)openPlace(); else {toast('Melde dich an, um diesen Ort zu merken.');openAuth();} });
+  map.on('click',async e=>{ if(drawMode){addDrawPoint(e.latlng);return;} if($('officialTrailToggle').checked){await inspectOfficialTrail(e.latlng);return;} currentPoint={lat:e.latlng.lat,lon:e.latlng.lng,name:'Mein Wanderziel'}; if(user)openPlace(); else {toast('Melde dich an, um diesen Ort zu merken.');openAuth();} });
+}
+
+async function inspectOfficialTrail(latlng){
+  try {
+    const result=await callApi(`/api/trails/nearby?lat=${encodeURIComponent(latlng.lat)}&lon=${encodeURIComponent(latlng.lng)}`);
+    if(!result.found){toast('Kein offizieller Wanderwegabschnitt innerhalb von 65 Metern gefunden.');return;}
+    const s=result.segment;
+    if(highlightedOfficialSegment)map.removeLayer(highlightedOfficialSegment);
+    highlightedOfficialSegment=L.polyline(s.coordinates.map(c=>[c[1],c[0]]),{color:'#e04e29',weight:7,opacity:.95}).addTo(map);
+    const root=document.createElement('div');root.className='route-popup';
+    const title=document.createElement('strong');title.textContent='Offizieller Wanderwegabschnitt';
+    const details=document.createElement('div');details.className='route-stats';
+    const len=document.createElement('span');len.className='route-stat';len.textContent=Number(s.length_km).toFixed(2)+' km';
+    const category=document.createElement('span');category.className='route-stat';category.textContent=s.category;
+    const caveat=document.createElement('small');caveat.textContent='Länge dieses Abschnitts, nicht die gesamte Wanderroute. Kategorie: swisstopo.';
+    details.append(len,category);root.append(title,details,caveat);
+    highlightedOfficialSegment.bindPopup(root).openPopup(latlng);
+  } catch(e) {toast(e.message);}
 }
 function openPlace(){if(!currentPoint)return; $('placeName').value=currentPoint.name||'Mein Wanderziel';$('placeNotes').value='';$('coordinates').textContent=`Koordinaten: ${currentPoint.lat.toFixed(5)}, ${currentPoint.lon.toFixed(5)}`;$('placeError').classList.add('hidden');modal('place',true);}
 function selectPlace(place){
