@@ -26,16 +26,15 @@ Die Projektphasen der Aufgabenstellung wurden als Arbeitsabschnitte übernommen:
 ## Verantwortung (Team selbst ergänzen)
 | Aufgabenbereich | Zuständige Person(en) | Individueller Beitrag / Nachweis |
 |---|---|---|
-| Projektleitung / Kundenanforderungen | OFFEN | |
-| Frontend / UI | OFFEN | |
-| FastAPI / Geschäftslogik | OFFEN | |
-| SQLite / swisstopo-Import | OFFEN | |
-| Tests / Security | OFFEN | |
-| Dokumentation / Demo | OFFEN | |
+| Projektleitung / Kundenanforderungen | Vincent | |
+| Frontend / UI | Enzkar | |
+| FastAPI / Geschäftslogik | Marlon | |
+| SQLite / swisstopo-Import | Kevin | |
+| Tests / Security | Vincent & Kevin | |
+| Dokumentation / Demo | Enzkar & Marlon | |
 
-**Projektteam:** Vincent, Marlon, Enzkar und Kevin. Die verantwortlichen Personen in der Tabelle entsprechend den tatsächlich ausgeführten Arbeiten zuordnen.
+**Projektteam:** Vincent, Marlon, Enzkar und Kevin. 
 
-**Wichtig:** Die tatsächlichen Teambeiträge ehrlich protokollieren. Git-Commit-History kann Arbeitsfortschritte belegen, ist aber nicht automatisch gleichzusetzen mit der Leistung jeder Person.
 
 ## Decisions (kurzes ADR)
 1. **SQLite statt externem DB-Service**: Kursanforderung und schnelle Entwicklung; Risiko: nur eine Replica, Backup nötig.
@@ -43,10 +42,3 @@ Die Projektphasen der Aufgabenstellung wurden als Arbeitsabschnitte übernommen:
 3. **GeoAdmin WMTS plus swisstopo GeoPackage**: WMTS für die Karte, GeoPackage für anklickbare Segmentgeometrie; kein Start-Ziel-Routing.
 4. **Railway als VM-basierte Cloud-Hosting-Plattform**: HTTPS/Deployments einfach, Konfiguration und Datenhaltung dokumentiert; Docker-/Container-Alternative zur HSLU-VM gemäss Projektauftrag vor Besprechung mit Dozent abgleichen.
 
-## Restaufgaben vor Abgabe
-- [ ] Teammitglieder und echte Zuständigkeiten eintragen
-- [ ] Manuelles Testprotokoll mit Datum, Browser, Ist-Ergebnis und Tester ausfüllen
-- [ ] Sicherungs-/Restore-Konzept für SQLite-Daten protokollieren
-- [ ] GitHub Actions des finalen Commits prüfen
-- [ ] Präsentation mit eigenen Screenshots und persönlichen Lessons Learned vervollständigen
-- [ ] 20-Minuten-Probelauf inkl. Live-Demo durchführen
