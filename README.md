@@ -48,9 +48,6 @@ Der lokale Start ermöglicht Benutzerfunktionen und GeoAdmin-Suche. Für offizie
 ## Qualität / Sicherheit
 Unit- und API-Integrationstests: `python -m pytest -q`; GitHub Actions `tests.yml`. Live-Smoke-Test unter `.github/workflows/production-smoke.yml`. Manuelle Browser-Systemtests sind im Testplan separat dokumentiert und müssen vom Team tatsächlich durchgeführt werden. Passwörter werden mit scrypt+Salt verarbeitet; Sessions sind HttpOnly/SameSite, Railway-HTTPS und Secure-Cookie aktiviert. Einschränkungen siehe Security-Dokument.
 
-## Team, Verantwortung und Projektmanagement
-**Noch auszufüllen:** reale Teammitglieder, Rollen, Aufgabenverteilung, Milestones und persönliche Lessons Learned. Keine erfundenen Tätigkeitsnachweise verwenden. Fortschritt kann anhand der Git-History, der Issue-/Commit-Kommentare und des [Projektmanagement-Dokuments](SwissTrail_HSLU_Projekt_V2/swisstrail/docs/PROJEKTPLAN.md) nachvollzogen werden.
-
 ## Credits
 [swisstopo / GeoAdmin](https://www.geo.admin.ch/) (Karten, SearchServer, swissTLM3D Wanderwege); [Leaflet](https://leafletjs.com/) (interaktive Karte); [FastAPI](https://fastapi.tiangolo.com/), [Pydantic](https://docs.pydantic.dev/), [Shapely](https://shapely.readthedocs.io/), [pyproj](https://pyproj4.github.io/pyproj/), SQLite; Railway (Hosting). HSLU Projektauftrag «Data Driven Webanwendung» (intern bereitgestelltes Aufgabenblatt).
 
